@@ -264,26 +264,24 @@ int main(int argc, char *argv[])
 
     dep_fn = get_dep_fn(argc, argv);
     if (!dep_fn)
-        goto done;
+        return 0;
 
     src_fn = get_src_fn(argc, argv);
     if (!src_fn)
-        goto done;
+        return 0;
 
     depfile = depfile_get(dep_fn);
-    if (!depfile->sdkconfig_dir)
-        goto done_depfile;
+    if (!depfile->sdkconfig_dir) {
+	depfile_put(depfile);
+	return 0;
+    }
 
     config = config_get(src_fn);
-    if (!config->options_cnt)
-        goto done_config;
 
     fix_dep_file(depfile, config, dep_fn);
 
-done_config:
     config_put(config);
-done_depfile:
     depfile_put(depfile);
-done:
+
     return 0;
 }
