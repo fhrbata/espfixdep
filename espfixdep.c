@@ -272,8 +272,8 @@ int main(int argc, char *argv[])
 
     depfile = depfile_get(dep_fn);
     if (!depfile->sdkconfig_dir) {
-	depfile_put(depfile);
-	return 0;
+        depfile_put(depfile);
+        return 0;
     }
 
     config = config_get(src_fn);
