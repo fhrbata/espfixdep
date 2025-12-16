@@ -1,4 +1,4 @@
-VERSION = 0.0.0
+VERSION = 0.1.0
 NAME := espfixdep
 DUMPMACHINE := $(shell $(CC) -dumpmachine)
 ARCHIVE_NAME := $(NAME)-$(VERSION)-$(DUMPMACHINE)
