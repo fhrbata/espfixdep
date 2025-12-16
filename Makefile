@@ -44,28 +44,28 @@ $(RELEASE):
 	mkdir -p $@
 
 $(O)/%.o: %.c | $(O)
-		$(CC) $(BUILD_DEFINES) $(BUILD_CFLAGS) -MD -MP -o $@ -c $<
+	$(CC) $(BUILD_DEFINES) $(BUILD_CFLAGS) -MD -MP -o $@ -c $<
 
 $(BINARY): $(OBJS) | $(O)
-		$(CC) $(BUILD_LDFLAGS) -o $@ $^
+	$(CC) $(BUILD_LDFLAGS) -o $@ $^
 
 .PHONY: clean archive
 
 archive: $(ARCHIVE)
 
 %.tar.gz: $(BINARY) | $(RELEASE)
-		mkdir -p $(O)/$(NAME)-$(VERSION)/bin
-		cp $(BINARY) $(O)/$(NAME)-$(VERSION)/bin/
-		cd $(O) && tar -cvzf $@ $(NAME)-$(VERSION)
-		rm -rf $(O)/$(NAME)-$(VERSION)
+	mkdir -p $(O)/$(NAME)-$(VERSION)/bin
+	cp $(BINARY) $(O)/$(NAME)-$(VERSION)/bin/
+	cd $(O) && tar -cvzf $@ $(NAME)-$(VERSION)
+	rm -rf $(O)/$(NAME)-$(VERSION)
 
 %.zip: $(BINARY) | $(RELEASE)
-		mkdir -p $(O)/$(NAME)-$(VERSION)/bin
-		cp $(BINARY) $(O)/$(NAME)-$(VERSION)/bin/
-		cd $(O) && zip -r $@ $(NAME)-$(VERSION)
-		rm -rf $(O)/$(NAME)-$(VERSION)
+	mkdir -p $(O)/$(NAME)-$(VERSION)/bin
+	cp $(BINARY) $(O)/$(NAME)-$(VERSION)/bin/
+	cd $(O) && zip -r $@ $(NAME)-$(VERSION)
+	rm -rf $(O)/$(NAME)-$(VERSION)
 
 clean:
-		rm -rf $(O) $(ARCHIVE)
+	rm -rf $(O) $(ARCHIVE)
 
 -include $(O)/*.d
