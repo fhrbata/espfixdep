@@ -11,7 +11,9 @@ BUILD_CFLAGS := $(CFLAGS) $(CFLAGS_APPEND)
 BUILD_LDFLAGS := $(LDFLAGS) $(LDFLAGS_APPEND)
 BUILD_DEFINES := -DVERSION=\"$(VERSION)\"
 
-ifneq (,$(findstring mingw,$(DUMPMACHINE)))
+ifneq (,$(or \
+	$(findstring mingw,$(DUMPMACHINE)), \
+	$(findstring windows,$(DUMPMACHINE))))
 	OS := win
 else
 	OS := posix
