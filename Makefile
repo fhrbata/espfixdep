@@ -3,20 +3,26 @@ NAME := espfixdep
 DUMPMACHINE := $(shell $(CC) -dumpmachine)
 ARCHIVE_NAME := $(NAME)-$(VERSION)-$(DUMPMACHINE)
 
-O ?= $(abspath build/$(DUMPMACHINE))
-RELEASE ?= $(abspath release)
+O ?= build
+DIST ?= dist
 CFLAGS ?= -Wall -Werror -std=c99 -pedantic
 LDFLAGS ?=
+
+O := $(abspath $(O))
+DIST := $(abspath $(DIST))
 BUILD_CFLAGS := $(CFLAGS) $(CFLAGS_APPEND)
 BUILD_LDFLAGS := $(LDFLAGS) $(LDFLAGS_APPEND)
 BUILD_DEFINES := -DVERSION=\"$(VERSION)\"
 
+COMPILER_VERSION := $(shell $(CC) --version)
+CONTEXT := "$(COMPILER_VERSION) $(CFLAGS) $(LDFLAGS)"
+
 ifneq (,$(or \
 	$(findstring mingw,$(DUMPMACHINE)), \
 	$(findstring windows,$(DUMPMACHINE))))
-	OS := win
+	OS ?= win
 else
-	OS := posix
+	OS ?= posix
 endif
 
 SRCS := espfixdep.c
@@ -25,13 +31,13 @@ ifeq ($(OS), posix)
 
 SRCS += posix.c
 BINARY := $(O)/$(NAME)
-ARCHIVE := $(RELEASE)/$(NAME)-$(VERSION)-$(DUMPMACHINE).tar.gz
+ARCHIVE := $(DIST)/$(NAME)-$(VERSION)-$(DUMPMACHINE).tar.gz
 
 else ifeq ($(OS), win)
 
 SRCS += win.c
 BINARY := $(O)/$(NAME).exe
-ARCHIVE := $(RELEASE)/$(NAME)-$(VERSION)-$(DUMPMACHINE).zip
+ARCHIVE := $(DIST)/$(NAME)-$(VERSION)-$(DUMPMACHINE).zip
 
 endif
 
@@ -42,10 +48,13 @@ all: $(BINARY)
 $(O):
 	mkdir -p $@
 
-$(RELEASE):
+$(DIST):
 	mkdir -p $@
 
-$(O)/%.o: %.c | $(O)
+$(O)/context: FORCE | $(O)
+	@echo $(CONTEXT) | md5sum | cmp -s - $@ || echo $(CONTEXT) | md5sum > $@
+
+$(O)/%.o: %.c Makefile $(O)/context | $(O)
 	$(CC) $(BUILD_DEFINES) $(BUILD_CFLAGS) -MD -MP -o $@ -c $<
 
 $(BINARY): $(OBJS) | $(O)
@@ -53,15 +62,17 @@ $(BINARY): $(OBJS) | $(O)
 
 .PHONY: clean archive
 
+FORCE:
+
 archive: $(ARCHIVE)
 
-%.tar.gz: $(BINARY) | $(RELEASE)
+%.tar.gz: $(BINARY) | $(DIST)
 	mkdir -p $(O)/$(NAME)-$(VERSION)/bin
 	cp $(BINARY) $(O)/$(NAME)-$(VERSION)/bin/
 	cd $(O) && tar -cvzf $@ $(NAME)-$(VERSION)
 	rm -rf $(O)/$(NAME)-$(VERSION)
 
-%.zip: $(BINARY) | $(RELEASE)
+%.zip: $(BINARY) | $(DIST)
 	mkdir -p $(O)/$(NAME)-$(VERSION)/bin
 	cp $(BINARY) $(O)/$(NAME)-$(VERSION)/bin/
 	cd $(O) && zip -r $@ $(NAME)-$(VERSION)
