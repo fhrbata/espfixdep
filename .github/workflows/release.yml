@@ -103,13 +103,25 @@ jobs:
         run: pip install commitizen
 
       - name: Get version
+        if: github.event_name != 'workflow_dispatch'
         id: get_version
         run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
 
+      - name: Get version
+        if: github.event_name == 'workflow_dispatch'
+        id: get_version
+        run: echo "VERSION=v0.0.0" >> $GITHUB_OUTPUT
+
       - name: Generate changelog
+        if: github.event_name != 'workflow_dispatch'
         run: |
           cz changelog ${{ steps.get_version.outputs.VERSION }} --file-name changelog_body.md
           cat changelog_body.md
+
+      - name: Generate changelog
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          touch changelog_body.md
 
       - name: Create release
         uses: softprops/action-gh-release@v2
