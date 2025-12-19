@@ -10,9 +10,6 @@ LDFLAGS ?=
 CROSS_COMPILE := $(subst $(lastword $(subst -, ,$(CC))),,$(CC))
 WINDRES := $(CROSS_COMPILE)windres
 
-O := $(abspath $(O))
-DIST := $(abspath $(DIST))
-STAGE := $(abspath $(STAGE))
 BUILD_CFLAGS := $(CFLAGS) $(CFLAGS_APPEND)
 BUILD_LDFLAGS := $(LDFLAGS) $(LDFLAGS_APPEND)
 BUILD_DEFINES := -DVERSION=\"$(VERSION)\"
@@ -104,9 +101,6 @@ $(O):
 $(DIST):
 	mkdir -p $@
 
-$(STAGE):
-	mkdir -p $@
-
 $(O)/context: FORCE | $(O)
 	@echo $(CONTEXT) | md5sum | cmp -s - $@ || echo $(CONTEXT) | md5sum > $@
 
@@ -124,23 +118,19 @@ targz-pkg: $(DIST)/$(PKG_NAME).tar.gz
 tarxz-pkg: $(DIST)/$(PKG_NAME).tar.xz
 zip-pkg: $(DIST)/$(PKG_NAME).zip
 
-$(DIST)/$(PKG_NAME).tar.gz: $(BINARY) | $(DIST) $(STAGE)
-	rm -rf $(STAGE)/targz
-	mkdir -p $(STAGE)/targz/$(NAME)-$(VERSION)/bin
-	cp $(BINARY) $(STAGE)/targz/$(NAME)-$(VERSION)/bin/
-	cd $(STAGE)/targz && tar -cvzf $@ $(NAME)-$(VERSION)
+$(STAGE): $(BINARY)
+	@rm -rf $@
+	@install -D $(BINARY) $(STAGE)/$(NAME)-$(VERSION)/bin/$(notdir $(BINARY))
+	@touch $@
 
-$(DIST)/$(PKG_NAME).tar.xz: $(BINARY) | $(DIST) $(STAGE)
-	rm -rf $(STAGE)/tarxz
-	mkdir -p $(STAGE)/tarxz/$(NAME)-$(VERSION)/bin
-	cp $(BINARY) $(STAGE)/tarxz/$(NAME)-$(VERSION)/bin/
-	cd $(STAGE)/tarxz && tar -cvJf $@ $(NAME)-$(VERSION)
+$(DIST)/$(PKG_NAME).tar.gz: $(STAGE) | $(DIST)
+	cd $(STAGE) && tar -cvzf $(abspath $@) $(NAME)-$(VERSION)
 
-$(DIST)/$(PKG_NAME).zip: $(BINARY) | $(DIST) $(STAGE)
-	rm -rf $(STAGE)/zip
-	mkdir -p $(STAGE)/zip/$(NAME)-$(VERSION)/bin
-	cp $(BINARY) $(STAGE)/zip/$(NAME)-$(VERSION)/bin/
-	cd $(STAGE)/zip && zip -r $@ $(NAME)-$(VERSION)
+$(DIST)/$(PKG_NAME).tar.xz: $(STAGE) | $(DIST)
+	cd $(STAGE) && tar -cvJf $(abspath $@) $(NAME)-$(VERSION)
+
+$(DIST)/$(PKG_NAME).zip: $(STAGE) | $(DIST)
+	cd $(STAGE) && zip -r $(abspath $@) $(NAME)-$(VERSION)
 
 clean:
 	rm -rf $(O) $(DIST) $(STAGE)
