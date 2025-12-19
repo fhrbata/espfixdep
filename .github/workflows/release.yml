@@ -11,117 +11,117 @@ permissions:
 
 jobs:
   build-linux:
-    name: Build Linux Distributions
+    name: build linux (i686, x86_64, arm64, armhf, armel)
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install toolchains
+      - name: install toolchains
         run: |
           sudo apt-get update
           sudo apt-get install -y \
+            gcc-i686-linux-gnu \
             gcc-x86-64-linux-gnu \
             gcc-aarch64-linux-gnu \
-            gcc-arm-linux-gnueabi \
             gcc-arm-linux-gnueabihf \
-            gcc-i686-linux-gnu
+            gcc-arm-linux-gnueabi
 
-      - name: Build
+      - name: build
         run: |
           set -eux
+          make CC=i686-linux-gnu-gcc targz-pkg tarxz-pkg
           make CC=x86_64-linux-gnu-gcc targz-pkg tarxz-pkg
           make CC=aarch64-linux-gnu-gcc targz-pkg tarxz-pkg
-          make CC=arm-linux-gnueabi-gcc targz-pkg tarxz-pkg
           make CC=arm-linux-gnueabihf-gcc targz-pkg tarxz-pkg
-          make CC=i686-linux-gnu-gcc targz-pkg tarxz-pkg
+          make CC=arm-linux-gnueabi-gcc targz-pkg tarxz-pkg
 
-      - name: Upload artifacts
+      - name: upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: linux-dist-artifacts
           path: dist/*
 
   build-windoes-mscvrt:
-    name: Build Windows Distributions with MSCVRT
+    name: build windows msvrct (i686, x86_64)
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install toolchains
+      - name: install toolchains
         run: |
           sudo apt-get update
           sudo apt-get install -y \
             gcc-mingw-w64
 
-      - name: Build
+      - name: build
         run: |
           set -eux
           make CC=i686-w64-mingw32-gcc zip-pkg PKG_SUFFIX="-msvcrt"
           make CC=x86_64-w64-mingw32-gcc zip-pkg PKG_SUFFIX="-msvcrt"
 
-      - name: Upload artifacts
+      - name: upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: windows-dist-artifacts-msvcrt
           path: dist/*
 
   build-windoes-ucrt:
-    name: Build Windows Distributions with UCRT
+    name: build windows ucrt (i686, x86_64)
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install toolchains
+      - name: install toolchains
         run: |
-          sudo apt-get update \
+          sudo apt-get update
           eval $(make -f Makefile.llvm-mingw)
 
-      - name: Build
+      - name: build
         run: |
           set -eux
           make CC=i686-w64-mingw32-clang zip-pkg PKG_SUFFIX="-msvcrt"
           make CC=x86_64-w64-mingw32-clang zip-pkg PKG_SUFFIX="-ucrt"
 
-      - name: Upload artifacts
+      - name: upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: windows-dist-artifacts-ucrt
           path: dist/*
 
   build-macos-arm64:
-    name: Build macOS Distributions arm64
+    name: build macOS (arm64)
     runs-on: macos-latest
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build
+      - name: build
         run: |
           set -eux
           make CC=clang targz-pkg tarxz-pkg
 
-      - name: Upload artifacts
+      - name: upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: macos-dist-artifacts-arm64
           path: dist/*
 
   build-macos-x86_64:
-    name: Build macOS Distributions x86_64
+    name: build macOS (x86_64)
     runs-on: macos-15-intel
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build
+      - name: build
         run: |
           set -eux
           make CC=clang targz-pkg tarxz-pkg
 
-      - name: Upload artifacts
+      - name: upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: macos-dist-artifacts-x86_64
