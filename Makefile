@@ -120,7 +120,8 @@ zip-pkg: $(DIST)/$(PKG_NAME).zip
 
 $(STAGE): $(BINARY)
 	@rm -rf $@
-	@install -D $(BINARY) $(STAGE)/$(NAME)-$(VERSION)/bin/$(notdir $(BINARY))
+	@install -d $@/$(NAME)-$(VERSION)/bin
+	@install $(BINARY) $(STAGE)/$(NAME)-$(VERSION)/bin
 	@touch $@
 
 $(DIST)/$(PKG_NAME).tar.gz: $(STAGE) | $(DIST)
