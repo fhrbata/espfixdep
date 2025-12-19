@@ -1,13 +1,14 @@
 VERSION = 0.1.0
 NAME := espfixdep
-DUMPMACHINE := $(shell $(CC) -dumpmachine)
-PKG_NAME := $(NAME)-$(VERSION)-$(DUMPMACHINE)
 
 O ?= build
 DIST ?= dist
 STAGE ?= stage
 CFLAGS ?= -Wall -Werror -std=c99 -pedantic
 LDFLAGS ?=
+
+CROSS_COMPILE := $(subst $(lastword $(subst -, ,$(CC))),,$(CC))
+WINDRES := $(CROSS_COMPILE)windres
 
 O := $(abspath $(O))
 DIST := $(abspath $(DIST))
@@ -19,31 +20,81 @@ BUILD_DEFINES := -DVERSION=\"$(VERSION)\"
 COMPILER_VERSION := $(shell $(CC) --version)
 CONTEXT := "$(COMPILER_VERSION) $(CFLAGS) $(LDFLAGS)"
 
+DUMPMACHINE := $(shell $(CC) -dumpmachine)
+
+ifneq ($(findstring x86_64,$(DUMPMACHINE)),)
+    ARCH := x86_64
+else ifneq ($(findstring i686,$(DUMPMACHINE)),)
+    ARCH := x86
+else ifneq ($(findstring aarch64,$(DUMPMACHINE)),)
+    ARCH := arm64
+else ifneq ($(findstring arm,$(DUMPMACHINE)),)
+    # Check for Hard Float vs Soft Float
+    ifneq ($(findstring gnueabihf,$(DUMPMACHINE)),)
+        ARCH := armhf
+    else
+        ARCH := armel
+    endif
+endif
+
 ifneq (,$(or \
 	$(findstring mingw,$(DUMPMACHINE)), \
 	$(findstring windows,$(DUMPMACHINE))))
 	OS ?= win
+else ifneq ($(findstring apple,$(DUMP)),)
+	OS ?= macos
 else
-	OS ?= posix
+	OS ?= linux
 endif
+
+PKG_NAME := $(NAME)-$(VERSION)-$(OS)-$(ARCH)$(PKG_SUFFIX)
 
 SRCS := espfixdep.c
 
-ifeq ($(OS), posix)
-
-SRCS += posix.c
-BINARY := $(O)/$(NAME)
-
-else ifeq ($(OS), win)
+ifeq ($(OS), win)
 
 SRCS += win.c
 BINARY := $(O)/$(NAME).exe
 
+else
+
+SRCS += posix.c
+BINARY := $(O)/$(NAME)
+
 endif
 
 OBJS := $(SRCS:%.c=$(O)/%.o)
+ifeq ($(OS), win)
+	OBJS += $(O)/manifest.o
+endif
 
 all: $(BINARY)
+
+define MANIFEST_XML
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+  <assemblyIdentity
+    type="win32"
+    name="$(NAME)"
+    version="$(VERSION)"
+    processorArchitecture="*"
+  />
+  <application>
+    <windowsSettings>
+      <activeCodePage xmlns="http://schemas.microsoft.com/SMI/2019/WindowsSettings">UTF-8</activeCodePage>
+    </windowsSettings>
+  </application>
+</assembly>
+endef
+
+$(O)/manifest.xml: Makefile | $(O)
+	$(file >$@,$(MANIFEST_XML))
+
+$(O)/manifest.rc: $(O)/manifest.xml
+	$(file >$@,1 RT_MANIFEST "$<")
+
+$(O)/manifest.o: $(O)/manifest.rc $(O)/context
+	$(WINDRES) --input=$< --output=$@
 
 $(O):
 	mkdir -p $@

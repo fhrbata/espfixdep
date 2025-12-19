@@ -1,6 +1,7 @@
 name: Build and Release
 
 on:
+  workflow_dispatch:
   push:
     tags:
       - v*
@@ -30,13 +31,13 @@ jobs:
       - name: Build all Linux / Windows targets
         run: |
           set -eux
-          make CC=x86_64-linux-gnu-gcc archive
-          make CC=aarch64-linux-gnu-gcc archive
-          make CC=arm-linux-gnueabi-gcc archive
-          make CC=arm-linux-gnueabihf-gcc archive
-          make CC=i686-linux-gnu-gcc archive
-          make CC=i686-w64-mingw32-gcc archive
-          make CC=x86_64-w64-mingw32-gcc archive
+          make CC=x86_64-linux-gnu-gcc targz-pkg tarxz-pkg
+          make CC=aarch64-linux-gnu-gcc targz-pkg tarxz-pkg
+          make CC=arm-linux-gnueabi-gcc targz-pkg tarxz-pkg
+          make CC=arm-linux-gnueabihf-gcc targz-pkg tarxz-pkg
+          make CC=i686-linux-gnu-gcc targz-pkg tarxz-pkg
+          make CC=i686-w64-mingw32-gcc zip-pkg PKG_SUFFIX="-msvcrt"
+          make CC=x86_64-w64-mingw32-gcc zip-pkg PKG_SUFFIX="-msvcrt"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -54,7 +55,7 @@ jobs:
       - name: Build macOS target
         run: |
           set -eux
-          make CC=clang archive
+          make CC=clang targz-pkg tarxz-pkg
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -72,7 +73,7 @@ jobs:
       - name: Build macOS target
         run: |
           set -eux
-          make CC=clang archive
+          make CC=clang targz-pkg tarxz-pkg
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
