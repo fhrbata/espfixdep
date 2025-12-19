@@ -1,3 +1,9 @@
+## v0.2.2 (2025-12-19)
+
+### Bug Fixes
+
+- **ci**: use install in a portable way
+
 ## v0.2.1 (2025-12-19)
 
 ### Bug Fixes
