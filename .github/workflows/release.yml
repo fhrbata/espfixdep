@@ -131,11 +131,11 @@ jobs:
     if: github.event_name != 'workflow_dispatch'
     name: Create GitHub Release
     needs:
-      - linux-dist-artifacts
-      - windows-dist-artifacts-msvcrt
-      - windows-dist-artifacts-ucrt
-      - macos-dist-artifacts-arm64
-      - macos-dist-artifacts-x86_64
+      - build-linux
+      - build-windoes-mscvrt
+      - build-windoes-ucrt
+      - build-macos-arm64
+      - build-macos-x86_64
     runs-on: ubuntu-latest
 
     steps:
