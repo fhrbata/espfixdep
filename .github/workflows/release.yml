@@ -82,6 +82,7 @@ jobs:
           path: dist/*
 
   release:
+    if: github.event_name != 'workflow_dispatch'
     name: Create GitHub Release
     needs:
       - build-linux
@@ -105,20 +106,12 @@ jobs:
       - name: Get version
         id: get_version
         run: |
-          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-            echo "VERSION=$(git describe --tags --always)" >> $GITHUB_OUTPUT
-          else
-            echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
-          fi
+          echo "VERSION=${GITHUB_REF#refs/tags/v}" | tee -a $GITHUB_OUTPUT
 
       - name: Generate changelog
         run: |
-          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-            echo "##TEST RELEASE" > changelog_body.md
-          else
-            cz changelog ${{ steps.get_version.outputs.VERSION }} --file-name changelog_body.md
-            cat changelog_body.md
-          fi
+          cz changelog ${{ steps.get_version.outputs.VERSION }} --file-name changelog_body.md
+          cat changelog_body.md
 
       - name: Create release
         uses: softprops/action-gh-release@v2
