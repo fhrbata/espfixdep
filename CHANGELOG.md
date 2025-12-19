@@ -1,3 +1,10 @@
+## v0.2.1 (2025-12-19)
+
+### Bug Fixes
+
+- **ci**: generate only tar.gz packages
+- **make**: simplify package creation
+
 ## v0.2.0 (2025-12-19)
 
 ### New Features
