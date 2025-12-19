@@ -41,7 +41,7 @@ ifneq (,$(or \
 	$(findstring mingw,$(DUMPMACHINE)), \
 	$(findstring windows,$(DUMPMACHINE))))
 	OS ?= win
-else ifneq ($(findstring apple,$(DUMP)),)
+else ifneq ($(findstring apple,$(DUMPMACHINE)),)
 	OS ?= macos
 else
 	OS ?= linux
