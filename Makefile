@@ -28,6 +28,8 @@ else ifneq ($(findstring i686,$(DUMPMACHINE)),)
     ARCH := x86
 else ifneq ($(findstring aarch64,$(DUMPMACHINE)),)
     ARCH := arm64
+else ifneq ($(findstring arm64,$(DUMPMACHINE)),)
+    ARCH := arm64
 else ifneq ($(findstring arm,$(DUMPMACHINE)),)
     # Check for Hard Float vs Soft Float
     ifneq ($(findstring gnueabihf,$(DUMPMACHINE)),)
@@ -37,9 +39,9 @@ else ifneq ($(findstring arm,$(DUMPMACHINE)),)
     endif
 endif
 
-ifneq (,$(or \
-	$(findstring mingw,$(DUMPMACHINE)), \
-	$(findstring windows,$(DUMPMACHINE))))
+ifneq ($(findstring mingw,$(DUMPMACHINE)),)
+	OS ?= win
+else ifneq ($(findstring windows,$(DUMPMACHINE)),)
 	OS ?= win
 else ifneq ($(findstring apple,$(DUMPMACHINE)),)
 	OS ?= macos
