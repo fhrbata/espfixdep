@@ -75,7 +75,7 @@ define MANIFEST_XML
   <assemblyIdentity
     type="win32"
     name="$(NAME)"
-    version="$(VERSION)"
+    version="$(VERSION).0"
     processorArchitecture="*"
   />
   <application>
@@ -90,7 +90,7 @@ $(O)/manifest.xml: Makefile | $(O)
 	$(file >$@,$(MANIFEST_XML))
 
 $(O)/manifest.rc: $(O)/manifest.xml
-	$(file >$@,1 RT_MANIFEST "$<")
+	$(file >$@,1 24 "$<")
 
 $(O)/manifest.o: $(O)/manifest.rc $(O)/context
 	$(WINDRES) --input=$< --output=$@
