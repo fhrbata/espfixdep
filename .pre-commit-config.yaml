@@ -1,8 +1,14 @@
 repos:
-  - repo: https://github.com/pre-commit/mirrors-clang-format
-    rev: v17.0.6
+  - repo: local
     hooks:
       - id: clang-format
-        args: [--style=file]
-        files: \.(c|h)$
+        name: clang-format
+        entry: make clang-format
+        language: system
+        pass_filenames: false
+      - id: clang-tidy
+        name: clang-tidy
+        entry: make clang-tidy
+        language: system
+        pass_filenames: false
 
