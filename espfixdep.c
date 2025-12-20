@@ -33,7 +33,10 @@ char* read_file(char* fn) {
 	if (size == -1)
 		die_errno("ftell '%s'", fn);
 
+	errno = 0;
 	rewind(fp);
+	if (errno)
+		die_errno("rewind '%s'", fn);
 
 	buf = malloc(size + 1);
 	if (!buf)
@@ -42,7 +45,7 @@ char* read_file(char* fn) {
 	if (fread(buf, 1, size, fp) != size)
 		die("fread '%s'", fn);
 
-	buf[size] = '\0';
+	buf[size] = '\0'; // NOLINT(clang-analyzer-security.ArrayBound)
 
 	fclose(fp);
 
