@@ -8,6 +8,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+void os_init(void);
+void os_cleanup(void);
+int run_process(char* argv[]);
+int file_exists(char* fn);
+
 static inline void die_msg(char* file, int line, const char* func,
 			   int add_errno, char* fmt, ...) {
 	va_list ap;
@@ -23,15 +28,12 @@ static inline void die_msg(char* file, int line, const char* func,
 	else
 		fprintf(stderr, "\n");
 
+	os_cleanup();
 	exit(EXIT_FAILURE);
 }
 
 #define die(...) die_msg(__FILE__, __LINE__, __func__, 0, __VA_ARGS__)
 #define die_errno(...) die_msg(__FILE__, __LINE__, __func__, 1, __VA_ARGS__)
-
-void init(void);
-int run_process(char* argv[]);
-int file_exists(char* fn);
 
 static inline void str_to_lower(char* s) {
 	while (*s) {

@@ -237,7 +237,7 @@ int main(int argc, char* argv[]) {
 	char* src_fn;
 	int rv;
 
-	init();
+	os_init();
 
 	if (argc < 2) {
 		fprintf(stderr, "version: %s\n", VERSION);
@@ -269,6 +269,7 @@ int main(int argc, char* argv[]) {
 
 	config_put(config);
 	depfile_put(depfile);
+	os_cleanup();
 
 	return 0;
 }

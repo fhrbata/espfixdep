@@ -42,4 +42,12 @@ int run_process(char* argv[]) {
 
 int file_exists(char* fn) { return _access(fn, 0) != -1; }
 
-void init(void) { setlocale(LC_ALL, ".UTF8"); }
+static unsigned oldCP;
+
+void os_init(void) {
+	setlocale(LC_ALL, ".UTF8");
+	oldCP = GetConsoleOutputCP();
+	SetConsoleOutputCP(CP_UTF8);
+}
+
+void os_cleanup(void) { SetConsoleOutputCP(oldCP); }

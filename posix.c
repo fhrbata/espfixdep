@@ -31,4 +31,5 @@ int run_process(char* argv[]) {
 
 int file_exists(char* fn) { return access(fn, F_OK) == 0; }
 
-void init(void) {}
+void os_init(void) {}
+void os_cleanup(void) {}
