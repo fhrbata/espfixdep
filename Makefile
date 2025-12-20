@@ -140,7 +140,10 @@ clang-format:
 	clang-format --style=file -i *.[ch]
 
 clang-tidy:
-	clang-tidy $(SRCS) -- \
+	clang-tidy \
+		--extra-arg="--target=$(DUMPMACHINE)" \
+		$(SRCS) \
+		-- \
 		$(BUILD_DEFINES) \
 		$(BUILD_CFLAGS)
 
