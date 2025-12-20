@@ -1,3 +1,11 @@
+## v0.2.3 (2025-12-20)
+
+### Bug Fixes
+
+- add os_init and os_exit function
+- **make**: fix win manifest generation
+- add init function
+
 ## v0.2.2 (2025-12-19)
 
 ### Bug Fixes
