@@ -110,7 +110,7 @@ $(O)/%.o: %.c Makefile $(O)/context | $(O)
 $(BINARY): $(OBJS) | $(O)
 	$(CC) $(BUILD_LDFLAGS) -o $@ $^
 
-.PHONY: clean targz-pkg tarxz-pkg zip-pkg
+.PHONY: clean targz-pkg tarxz-pkg zip-pkg tidy
 
 FORCE:
 
@@ -135,5 +135,14 @@ $(DIST)/$(PKG_NAME).zip: $(STAGE) | $(DIST)
 
 clean:
 	rm -rf $(O) $(DIST) $(STAGE)
+
+clang-format:
+	clang-format --style=file -i *.[ch]
+
+clang-tidy:
+	clang-tidy $(SRCS) -- \
+		$(BUILD_DEFINES) \
+		$(BUILD_CFLAGS)
+
 
 -include $(O)/*.d

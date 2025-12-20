@@ -27,13 +27,21 @@ static inline void die_msg(char* file, int line, const char* func,
 		fprintf(stderr, ": %s (%d)\n", strerror(errno), errno);
 	else
 		fprintf(stderr, "\n");
-
-	os_cleanup();
-	exit(EXIT_FAILURE);
 }
 
-#define die(...) die_msg(__FILE__, __LINE__, __func__, 0, __VA_ARGS__)
-#define die_errno(...) die_msg(__FILE__, __LINE__, __func__, 1, __VA_ARGS__)
+#define die(...)                                                               \
+	do {                                                                   \
+		die_msg(__FILE__, __LINE__, __func__, 0, __VA_ARGS__);         \
+		os_cleanup();                                                  \
+		exit(EXIT_FAILURE);                                            \
+	} while (0)
+
+#define die_errno(...)                                                         \
+	do {                                                                   \
+		die_msg(__FILE__, __LINE__, __func__, 1, __VA_ARGS__);         \
+		os_cleanup();                                                  \
+		exit(EXIT_FAILURE);                                            \
+	} while (0)
 
 static inline void str_to_lower(char* s) {
 	while (*s) {
