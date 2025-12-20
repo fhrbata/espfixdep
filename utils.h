@@ -29,6 +29,7 @@ static inline void die_msg(char* file, int line, const char* func,
 #define die(...) die_msg(__FILE__, __LINE__, __func__, 0, __VA_ARGS__)
 #define die_errno(...) die_msg(__FILE__, __LINE__, __func__, 1, __VA_ARGS__)
 
+void init(void);
 int run_process(char* argv[]);
 int file_exists(char* fn);
 

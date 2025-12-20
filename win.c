@@ -1,5 +1,6 @@
 #include "utils.h"
 #include <io.h>
+#include <locale.h>
 #include <windows.h>
 
 char* EOL = "\r\n";
@@ -40,3 +41,5 @@ int run_process(char* argv[]) {
 }
 
 int file_exists(char* fn) { return _access(fn, 0) != -1; }
+
+void init(void) { setlocale(LC_ALL, ".UTF8"); }

@@ -237,6 +237,8 @@ int main(int argc, char* argv[]) {
 	char* src_fn;
 	int rv;
 
+	init();
+
 	if (argc < 2) {
 		fprintf(stderr, "version: %s\n", VERSION);
 		fprintf(stderr, "usage: espfixdep <cmd> <arg...>\n");
