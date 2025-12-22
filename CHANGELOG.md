@@ -1,3 +1,19 @@
+## v0.3.0 (2025-12-22)
+
+### New Features
+
+- use makefile targets in pre-commit
+- add clang-format and clang-tidy targets
+
+### Bug Fixes
+
+- use Linux stype for BreakBeforeBraces in clang-format
+- **make**: correct indenting
+- pass target to the clang-tidy
+- **ci**: treat clang-tidy warnings as errors
+- make clang-tidy happy
+- add .clang-tidy config
+
 ## v0.2.3 (2025-12-20)
 
 ### Bug Fixes
