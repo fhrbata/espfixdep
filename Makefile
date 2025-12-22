@@ -20,20 +20,20 @@ CONTEXT := "$(COMPILER_VERSION) $(CFLAGS) $(LDFLAGS)"
 DUMPMACHINE := $(shell $(CC) -dumpmachine)
 
 ifneq ($(findstring x86_64,$(DUMPMACHINE)),)
-    ARCH := x86_64
+	ARCH := x86_64
 else ifneq ($(findstring i686,$(DUMPMACHINE)),)
-    ARCH := x86
+	ARCH := x86
 else ifneq ($(findstring aarch64,$(DUMPMACHINE)),)
-    ARCH := arm64
+	ARCH := arm64
 else ifneq ($(findstring arm64,$(DUMPMACHINE)),)
-    ARCH := arm64
+	ARCH := arm64
 else ifneq ($(findstring arm,$(DUMPMACHINE)),)
-    # Check for Hard Float vs Soft Float
-    ifneq ($(findstring gnueabihf,$(DUMPMACHINE)),)
-        ARCH := armhf
-    else
-        ARCH := armel
-    endif
+	# Check for Hard Float vs Soft Float
+	ifneq ($(findstring gnueabihf,$(DUMPMACHINE)),)
+		ARCH := armhf
+	else
+		ARCH := armel
+	endif
 endif
 
 ifneq ($(findstring mingw,$(DUMPMACHINE)),)
