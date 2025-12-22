@@ -5,7 +5,8 @@
 
 char* EOL = "\r\n";
 
-int run_process(char* argv[]) {
+int run_process(char* argv[])
+{
 	STARTUPINFO si;
 	PROCESS_INFORMATION pi;
 	DWORD exitCode = 0;
@@ -44,7 +45,8 @@ int file_exists(char* fn) { return _access(fn, 0) != -1; }
 
 static unsigned oldCP;
 
-void os_init(void) {
+void os_init(void)
+{
 	setlocale(LC_ALL, ".UTF8");
 	oldCP = GetConsoleOutputCP();
 	SetConsoleOutputCP(CP_UTF8);

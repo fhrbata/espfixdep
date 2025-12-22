@@ -4,7 +4,8 @@
 
 char* EOL = "\n";
 
-int run_process(char* argv[]) {
+int run_process(char* argv[])
+{
 	pid_t pid;
 	int status;
 

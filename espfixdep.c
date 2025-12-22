@@ -17,7 +17,8 @@ struct config {
 	size_t options_cnt;
 };
 
-char* read_file(char* fn) {
+char* read_file(char* fn)
+{
 	FILE* fp;
 	long size;
 	char* buf;
@@ -52,7 +53,8 @@ char* read_file(char* fn) {
 	return buf;
 }
 
-char* get_sdkconfig_dir(char* dep) {
+char* get_sdkconfig_dir(char* dep)
+{
 	char* c;
 
 	c = strrchr(dep, '/');
@@ -67,7 +69,8 @@ char* get_sdkconfig_dir(char* dep) {
 	return dep;
 }
 
-void depfile_add_dep(struct depfile* depfile, char* dep, char* fn) {
+void depfile_add_dep(struct depfile* depfile, char* dep, char* fn)
+{
 	char* sdkconfig_dir;
 
 	if (!*dep)
@@ -83,7 +86,8 @@ void depfile_add_dep(struct depfile* depfile, char* dep, char* fn) {
 		die("insufficient dependencies array size for '%s'", fn);
 }
 
-struct depfile* depfile_get(char* fn) {
+struct depfile* depfile_get(char* fn)
+{
 	static struct depfile depfile;
 	char* c;
 	char* dep;
@@ -127,7 +131,8 @@ struct depfile* depfile_get(char* fn) {
 
 void depfile_put(struct depfile* depfile) { free(depfile->data); }
 
-void config_add_option(struct config* config, char* option, char* fn) {
+void config_add_option(struct config* config, char* option, char* fn)
+{
 	char** opts = config->options;
 	int i;
 
@@ -145,7 +150,8 @@ void config_add_option(struct config* config, char* option, char* fn) {
 	config->options[config->options_cnt++] = option;
 }
 
-struct config* config_get(char* fn) {
+struct config* config_get(char* fn)
+{
 	static struct config config;
 	char* prefix = "CONFIG_";
 	size_t prefix_len = strlen(prefix);
@@ -178,7 +184,8 @@ struct config* config_get(char* fn) {
 
 void config_put(struct config* config) { free(config->data); }
 
-char* get_dep_fn(int argc, char* argv[]) {
+char* get_dep_fn(int argc, char* argv[])
+{
 	do {
 		if (!strcmp(*argv, "-MF"))
 			return *++argv;
@@ -190,7 +197,8 @@ char* get_dep_fn(int argc, char* argv[]) {
 
 char* get_src_fn(int argc, char* argv[]) { return argv[argc - 1]; }
 
-void fix_dep_file(struct depfile* depfile, struct config* config, char* fn) {
+void fix_dep_file(struct depfile* depfile, struct config* config, char* fn)
+{
 #define MAX_DEP_FN_SIZE 1024 * 32
 
 	static char dep_fn[MAX_DEP_FN_SIZE];
@@ -233,7 +241,8 @@ void fix_dep_file(struct depfile* depfile, struct config* config, char* fn) {
 #undef MAX_DEP_FN_SIZE
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, char* argv[])
+{
 	struct depfile* depfile;
 	struct config* config;
 	char* dep_fn;

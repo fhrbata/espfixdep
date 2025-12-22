@@ -3,5 +3,5 @@ IndentWidth: 8
 TabWidth: 8
 UseTab: Always
 ColumnLimit: 80
-BreakBeforeBraces: Attach
+BreakBeforeBraces: Linux
 PointerAlignment: Left

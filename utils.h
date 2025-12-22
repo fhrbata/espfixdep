@@ -14,7 +14,8 @@ int run_process(char* argv[]);
 int file_exists(char* fn);
 
 static inline void die_msg(char* file, int line, const char* func,
-			   int add_errno, char* fmt, ...) {
+			   int add_errno, char* fmt, ...)
+{
 	va_list ap;
 
 	fprintf(stderr, "%s:%d: in %s: ", file, line, func);
@@ -43,14 +44,16 @@ static inline void die_msg(char* file, int line, const char* func,
 		exit(EXIT_FAILURE);                                            \
 	} while (0)
 
-static inline void str_to_lower(char* s) {
+static inline void str_to_lower(char* s)
+{
 	while (*s) {
 		*s = tolower(*s);
 		s++;
 	}
 }
 
-static inline void str_replace_chr(char* s, char from, char to) {
+static inline void str_replace_chr(char* s, char from, char to)
+{
 	while (*s) {
 		if (*s == from)
 			*s = to;
