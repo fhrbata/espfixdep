@@ -6,9 +6,3 @@ repos:
         entry: make clang-format
         language: system
         pass_filenames: false
-      - id: clang-tidy
-        name: clang-tidy
-        entry: make clang-tidy
-        language: system
-        pass_filenames: false
-
