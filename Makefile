@@ -7,11 +7,15 @@ STAGE ?= stage
 CFLAGS ?= -Wall -Werror -std=c99 -pedantic
 LDFLAGS ?=
 
+T ?= t/
+PFLAGS ?=
+T_OUT ?= t_out
+
 CROSS_COMPILE := $(subst $(lastword $(subst -, ,$(CC))),,$(CC))
 WINDRES := $(CROSS_COMPILE)windres
 
-BUILD_CFLAGS := $(CFLAGS) $(CFLAGS_APPEND)
-BUILD_LDFLAGS := $(LDFLAGS) $(LDFLAGS_APPEND)
+BUILD_CFLAGS = $(CFLAGS) $(CFLAGS_APPEND)
+BUILD_LDFLAGS = $(LDFLAGS) $(LDFLAGS_APPEND)
 BUILD_DEFINES := -DVERSION=\"$(VERSION)\"
 
 COMPILER_VERSION := $(shell $(CC) --version)
@@ -37,22 +41,27 @@ else ifneq ($(findstring arm,$(DUMPMACHINE)),)
 endif
 
 ifneq ($(findstring mingw,$(DUMPMACHINE)),)
-	OS ?= win
+	S ?= win
 else ifneq ($(findstring windows,$(DUMPMACHINE)),)
-	OS ?= win
+	S ?= win
 else ifneq ($(findstring apple,$(DUMPMACHINE)),)
-	OS ?= macos
+	S ?= macos
 else
-	OS ?= linux
+	S ?= linux
 endif
 
-PKG_NAME := $(NAME)-$(VERSION)-$(OS)-$(ARCH)$(PKG_SUFFIX)
+PKG_NAME := $(NAME)-$(VERSION)-$(S)-$(ARCH)$(PKG_SUFFIX)
 
-SRCS := espfixdep.c
+SRCS := fixdep.c \
+	port.c \
+	utils.c \
+	membuf.c
 
-ifeq ($(OS), win)
+ifeq ($(S), win)
 
 SRCS += win.c
+CFLAGS += -municode
+LDFLAGS += -municode
 BINARY := $(O)/$(NAME).exe
 
 else
@@ -63,7 +72,7 @@ BINARY := $(O)/$(NAME)
 endif
 
 OBJS := $(SRCS:%.c=$(O)/%.o)
-ifeq ($(OS), win)
+ifeq ($(S), win)
 	OBJS += $(O)/manifest.o
 endif
 
@@ -78,9 +87,9 @@ define MANIFEST_XML
     version="$(VERSION).0"
     processorArchitecture="*"
   />
-  <application>
-    <windowsSettings>
-      <activeCodePage xmlns="http://schemas.microsoft.com/SMI/2019/WindowsSettings">UTF-8</activeCodePage>
+  <application xmlns="urn:schemas-microsoft-com:asm.v3">
+    <windowsSettings xmlns:ws2="http://schemas.microsoft.com/SMI/2016/WindowsSettings">
+      <ws2:longPathAware>true</ws2:longPathAware>
     </windowsSettings>
   </application>
 </assembly>
@@ -110,7 +119,16 @@ $(O)/%.o: %.c Makefile $(O)/context | $(O)
 $(BINARY): $(OBJS) | $(O)
 	$(CC) $(BUILD_LDFLAGS) -o $@ $^
 
-.PHONY: clean targz-pkg tarxz-pkg zip-pkg tidy
+.PHONY: clean \
+	targz-pkg \
+	tarxz-pkg \
+	zip-pkg \
+	clang-format \
+	clang-tidy \
+	test \
+	cscope \
+	ctags \
+	tags
 
 FORCE:
 
@@ -134,7 +152,7 @@ $(DIST)/$(PKG_NAME).zip: $(STAGE) | $(DIST)
 	cd $(STAGE) && zip -r $(abspath $@) $(NAME)-$(VERSION)
 
 clean:
-	rm -rf $(O) $(DIST) $(STAGE)
+	rm -rf $(O) $(DIST) $(STAGE) $(T_OUT)
 
 clang-format:
 	clang-format --style=file -i *.[ch]
@@ -147,5 +165,18 @@ clang-tidy:
 		$(BUILD_DEFINES) \
 		$(BUILD_CFLAGS)
 
+BINARY_ABS := $(abspath $(BINARY))
+test: $(BINARY)
+	T_OUT=$(T_OUT) BINARY=$(BINARY_ABS) CC=${CC} prove $(PFLAGS) $(T)
+
+
+cscope:
+	find . \( -name "*.c" -o -name "*.h" \) >cscope.files
+	cscope -b
+
+ctags:
+	find . \( -name "*.c" -o -name "*.h" \) | ctags -L -
+
+tags: cscope ctags
 
 -include $(O)/*.d
