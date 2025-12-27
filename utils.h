@@ -8,59 +8,22 @@
 #include <stdlib.h>
 #include <string.h>
 
-void os_init(void);
-void os_cleanup(void);
-int run_process(char* argv[]);
-int file_exists(char* fn);
+#include "port.h"
 
-static inline void die_msg(char* file, int line, const char* func,
-			   int add_errno, char* fmt, ...)
-{
-	va_list ap;
+int exec_process(char **argv);
+void err_msg(char *file, int line, const char *func, int add_errno,
+	     int (*_f)(FILE *, const char *, ...),
+	     int (*_vf)(FILE *, const char *, va_list), char *fmt, ...);
 
-	fprintf(stderr, "%s:%d: in %s: ", file, line, func);
+#define err(...)                                                               \
+	err_msg(__FILE__, __LINE__, __func__, 0, fprintf, vfprintf, __VA_ARGS__)
+#define err_errno(...)                                                         \
+	err_msg(__FILE__, __LINE__, __func__, 1, fprintf, vfprintf, __VA_ARGS__)
+#define err_raw(...)                                                           \
+	err_msg(__FILE__, __LINE__, __func__, 0, fprintf_raw, vfprintf_raw,    \
+		__VA_ARGS__)
+#define err_errno_raw(...)                                                     \
+	err_msg(__FILE__, __LINE__, __func__, 1, fprintf_raw, vfprintf_raw,    \
+		__VA_ARGS__)
 
-	va_start(ap, fmt);
-	vfprintf(stderr, fmt, ap);
-	va_end(ap);
-
-	if (add_errno)
-		fprintf(stderr, ": %s (%d)\n", strerror(errno), errno);
-	else
-		fprintf(stderr, "\n");
-}
-
-#define die(...)                                                               \
-	do {                                                                   \
-		die_msg(__FILE__, __LINE__, __func__, 0, __VA_ARGS__);         \
-		os_cleanup();                                                  \
-		exit(EXIT_FAILURE);                                            \
-	} while (0)
-
-#define die_errno(...)                                                         \
-	do {                                                                   \
-		die_msg(__FILE__, __LINE__, __func__, 1, __VA_ARGS__);         \
-		os_cleanup();                                                  \
-		exit(EXIT_FAILURE);                                            \
-	} while (0)
-
-static inline void str_to_lower(char* s)
-{
-	while (*s) {
-		*s = tolower(*s);
-		s++;
-	}
-}
-
-static inline void str_replace_chr(char* s, char from, char to)
-{
-	while (*s) {
-		if (*s == from)
-			*s = to;
-		s++;
-	}
-}
-
-extern char* EOL;
-
-#endif
+#endif /* _UTILS_H_ */
