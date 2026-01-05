@@ -128,7 +128,8 @@ $(BINARY): $(OBJS) | $(O)
 	test \
 	cscope \
 	ctags \
-	tags
+	tags \ 
+	help
 
 FORCE:
 
@@ -178,5 +179,42 @@ ctags:
 	find . \( -name "*.c" -o -name "*.h" \) | ctags -L -
 
 tags: cscope ctags
+
+help:
+	@echo 'build variables:'
+	@echo ' CC               - compiler to use e.g. gcc-i686-linux-gnu or x86_64-w64-mingw32-gcc (default: $(CC))'
+	@echo ' O                - output build directory (default: $(O))'
+	@echo ' S                - operating system win/posix/macos (default: autodetected)'
+	@echo ' CFLAGS           - compiler options (default: $(CFLAGS))'
+	@echo ' LDFLAGS          - linker options (default: $(LDFLAGS))'
+	@echo ' CFLAGS_APPEND    - additional compiler options to append after CFLAGS'
+	@echo ' LDFLAGS_APPEND   - additional linker options to append after LDFLAGS'
+	@echo ''
+	@echo 'test variables:'
+	@echo ' T                - directory with tests using TAP(default: $(T))'
+	@echo ' T_OUT            - directory with test artifacts (default: $(T_OUT))'
+	@echo ' PFLAGS           - prove options for running tests through TAP harness  (default: $(PFLAGS))'
+	@echo ''
+	@echo 'test targets:'
+	@echo ' test             - run all tests  (default: $(PFLAGS))'
+	@echo ''
+	@echo 'distribution variables:'
+	@echo ' DIST             - output directory for distribution files (default: $(DIST))'
+	@echo ' STAGE            - stagging directory for distribution preparation (default: $(STAGE))'
+	@echo ''
+	@echo 'distribution targets:'
+	@echo ' targz-pkg        - create tar.gz archive for distribution'
+	@echo ' tarxz-pkg        - create tar.xz archive for distribution'
+	@echo ' zip-pkg          - create zip archive for distribution'
+	@echo ''
+	@echo 'lint targets:'
+	@echo ' clang-format     - run clang formatter'
+	@echo ' clang-tidy       - run clang tidy'
+	@echo ''
+	@echo 'misc targets:'
+	@echo ' clean            - remove: $(O) $(DIST) $(STAGE) $(T_OUT)'
+	@echo ' cscope           - generate cscope tags'
+	@echo ' ctags            - generate ctags'
+	@echo ' tags             - alias for cscope and tags'
 
 -include $(O)/*.d
