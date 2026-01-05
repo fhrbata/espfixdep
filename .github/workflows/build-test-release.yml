@@ -72,6 +72,11 @@ jobs:
 
   dist:
     runs-on: ${{ matrix.runner }}
+    name: dist
+    needs:
+      - test-linux
+      - test-windows
+      - test-macos
     strategy:
       matrix:
         include:
@@ -178,7 +183,12 @@ jobs:
       - name: get version
         id: get_version
         run: |
-          echo "VERSION=${GITHUB_REF#refs/tags/v}" | tee -a $GITHUB_OUTPUT
+          if [[ "${{ github.ref_type }}" == "tag" ]]; then
+            VERSION=${GITHUB_REF#refs/tags/v}
+          else
+            VERSION=$(git describe --tags --abbrev=0 | sed 's/^v//')
+          fi
+          echo "VERSION=$VERSION" | tee -a $GITHUB_OUTPUT
 
       - name: generate changelog
         run: |
