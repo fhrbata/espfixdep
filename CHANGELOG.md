@@ -1,3 +1,13 @@
+## v0.4.0 (2026-01-05)
+
+### New Features
+
+- refactor
+
+### Bug Fixes
+
+- release
+
 ## v0.3.0 (2025-12-22)
 
 ### New Features
