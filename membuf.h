@@ -9,7 +9,7 @@ struct membuf {
 };
 
 #define MEMBUF_ALLOC_MASK ((size_t)1 << (sizeof(size_t) * 8 - 1))
-#define MEMBUF_MAX_SIZE ((size_t) - 1 & ~MEMBUF_ALLOC_MASK)
+#define MEMBUF_MAX_SIZE ((size_t)-1 & ~MEMBUF_ALLOC_MASK)
 
 #define INIT_MEMBUF(b, s) {.buf = (b), .size = (s) & ~MEMBUF_ALLOC_MASK}
 

@@ -138,6 +138,8 @@ struct depfile *get_depfile(char *fn)
 	if (add_depfile_dep(&depfile, dep, c - dep))
 		goto err;
 
+	fclose(fp);
+
 	return &depfile;
 err:
 	if (fp)
@@ -243,6 +245,8 @@ struct config *get_config(char *fn)
 		if (add_config_opt(&config, opt, c - opt))
 			goto err;
 	}
+
+	fclose(fp);
 
 	return &config;
 
@@ -397,8 +401,13 @@ int main(int argc, char **argv)
 	int rv;
 	int exit_code = EXIT_FAILURE;
 
-	if (argc < 2) {
+	if (argc == 2 &&
+	    (!strcmp(argv[1], "-v") || !strcmp(argv[1], "--version"))) {
 		fprintf(stderr, "version: %s\n", VERSION);
+		return EXIT_SUCCESS;
+	}
+
+	if (argc < 2) {
 		fprintf(stderr, "usage: espfixdep <cmd> <arg...>\n");
 		goto done;
 	}
